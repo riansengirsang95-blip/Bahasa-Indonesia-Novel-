@@ -1,1 +1,940 @@
-Selamat Belajara Bahasa Indonesia
+Berikut adalah kuis interaktif HTML lengkap untuk materi Novel kelas XII SMA dengan judul **"PETUALANGAN LITERASI: TANTANGAN MEMAHAMI NOVEL"**. Kuis ini berisi 15 soal (8 pilihan ganda, 4 pilihan ganda kompleks, 3 analisis kutipan) dengan tingkat kesulitan bervariasi dan fitur penilaian otomatis.
+
+```html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petualangan Literasi: Tantangan Memahami Novel</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #6a3093 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: #333;
+  }
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    overflow: hidden;
+  }
+  header {
+    background: linear-gradient(135deg, #6a3093, #a044ff);
+    color: #fff;
+    padding: 30px 25px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: "📚";
+    position: absolute;
+    font-size: 120px;
+    opacity: 0.15;
+    top: -20px;
+    left: -10px;
+  }
+  header::after {
+    content: "✍️";
+    position: absolute;
+    font-size: 100px;
+    opacity: 0.15;
+    bottom: -20px;
+    right: -5px;
+  }
+  header h1 {
+    font-size: 1.8em;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  }
+  header p {
+    font-size: 1em;
+    opacity: 0.95;
+  }
+  .progress-bar {
+    height: 8px;
+    background: #e0e0e0;
+    width: 100%;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00c6ff, #0072ff);
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+  .info-bar {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 25px;
+    background: #f5f5f5;
+    font-size: 0.9em;
+    color: #555;
+    border-bottom: 1px solid #ddd;
+  }
+  .info-bar span { font-weight: bold; color: #6a3093; }
+  main { padding: 25px 30px; }
+  .question-card {
+    display: none;
+    animation: fadeIn 0.5s ease;
+  }
+  .question-card.active { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .badge {
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 0.75em;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 14px;
+  }
+  .badge-pg { background: #e3f2fd; color: #1565c0; }
+  .badge-kompleks { background: #fff3e0; color: #e65100; }
+  .badge-analisis { background: #f3e5f5; color: #6a1b9a; }
+  .question-text {
+    font-size: 1.08em;
+    line-height: 1.65;
+    margin-bottom: 18px;
+    font-weight: 600;
+    color: #222;
+  }
+  .quote-box {
+    background: #fafafa;
+    border-left: 5px solid #a044ff;
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-style: italic;
+    line-height: 1.7;
+    border-radius: 0 10px 10px 0;
+    color: #444;
+    font-size: 0.97em;
+  }
+  .quote-box .quote-source {
+    display: block;
+    margin-top: 10px;
+    font-style: normal;
+    font-weight: bold;
+    color: #6a3093;
+    font-size: 0.9em;
+  }
+  .options { list-style: none; }
+  .options li {
+    margin-bottom: 11px;
+    padding: 13px 16px;
+    background: #f8f9fa;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    line-height: 1.5;
+    font-size: 0.97em;
+  }
+  .options li:hover {
+    border-color: #a044ff;
+    background: #f3e5f5;
+    transform: translateX(4px);
+  }
+  .options li .marker {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #bbb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.8em;
+    color: #888;
+    transition: all 0.25s ease;
+  }
+  .options li.selected {
+    border-color: #0072ff;
+    background: #e3f2fd;
+  }
+  .options li.selected .marker {
+    background: #0072ff;
+    border-color: #0072ff;
+    color: #fff;
+  }
+  .options li.correct {
+    border-color: #28a745;
+    background: #d4edda;
+  }
+  .options li.correct .marker {
+    background: #28a745;
+    border-color: #28a745;
+    color: #fff;
+  }
+  .options li.wrong {
+    border-color: #dc3545;
+    background: #f8d7da;
+  }
+  .options li.wrong .marker {
+    background: #dc3545;
+    border-color: #dc3545;
+    color: #fff;
+  }
+  .options.multi li.selected .marker { border-radius: 6px; }
+  .instruction {
+    font-size: 0.85em;
+    color: #888;
+    margin-bottom: 12px;
+    font-style: italic;
+  }
+  .feedback {
+    margin-top: 16px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-size: 0.95em;
+    line-height: 1.6;
+    display: none;
+  }
+  .feedback.show { display: block; animation: fadeIn 0.4s ease; }
+  .feedback.correct { background: #d4edda; border-left: 5px solid #28a745; color: #155724; }
+  .feedback.wrong { background: #f8d7da; border-left: 5px solid #dc3545; color: #721c24; }
+  .feedback strong { display: block; margin-bottom: 5px; }
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+  }
+  .btn {
+    padding: 12px 26px;
+    border: none;
+    border-radius: 30px;
+    font-size: 0.95em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    letter-spacing: 0.3px;
+  }
+  .btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #6a3093, #a044ff);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(106, 48, 147, 0.4);
+  }
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(106, 48, 147, 0.5);
+  }
+  .btn-secondary {
+    background: #e0e0e0;
+    color: #555;
+  }
+  .btn-secondary:hover:not(:disabled) { background: #d0d0d0; }
+  .btn-submit {
+    background: linear-gradient(135deg, #0072ff, #00c6ff);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(0, 114, 255, 0.4);
+  }
+  .btn-submit:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 114, 255, 0.5);
+  }
+  .btn-finish {
+    background: linear-gradient(135deg, #28a745, #5cd65c);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+  }
+  /* Result screen */
+  #resultScreen {
+    display: none;
+    text-align: center;
+    padding: 20px 10px;
+    animation: fadeIn 0.6s ease;
+  }
+  #resultScreen.show { display: block; }
+  .result-emoji { font-size: 5em; margin-bottom: 10px; animation: bounce 1.2s infinite; }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+  .result-title {
+    font-size: 1.6em;
+    color: #6a3093;
+    margin-bottom: 8px;
+  }
+  .score-circle {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: conic-gradient(#28a745 var(--deg, 0deg), #e0e0e0 0deg);
+    position: relative;
+  }
+  .score-circle::before {
+    content: "";
+    position: absolute;
+    width: 130px;
+    height: 130px;
+    background: #fff;
+    border-radius: 50%;
+  }
+  .score-value {
+    position: relative;
+    font-size: 2.4em;
+    font-weight: bold;
+    color: #333;
+  }
+  .score-label {
+    position: relative;
+    font-size: 0.8em;
+    color: #888;
+  }
+  .result-detail {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    max-width: 500px;
+    margin: 20px auto;
+  }
+  .detail-item {
+    padding: 14px;
+    border-radius: 12px;
+    background: #f5f5f5;
+  }
+  .detail-item .num { font-size: 1.5em; font-weight: bold; }
+  .detail-item .lbl { font-size: 0.8em; color: #666; }
+  .detail-item.green .num { color: #28a745; }
+  .detail-item.red .num { color: #dc3545; }
+  .detail-item.blue .num { color: #0072ff; }
+  .result-message {
+    max-width: 550px;
+    margin: 18px auto;
+    padding: 16px 22px;
+    border-radius: 12px;
+    background: #f3e5f5;
+    color: #4a148c;
+    line-height: 1.6;
+    font-size: 0.97em;
+  }
+  .btn-restart {
+    margin-top: 10px;
+    background: linear-gradient(135deg, #6a3093, #a044ff);
+    color: #fff;
+    padding: 13px 34px;
+    border: none;
+    border-radius: 30px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(106, 48, 147, 0.4);
+    transition: all 0.25s ease;
+  }
+  .btn-restart:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(106, 48, 147, 0.5); }
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.3em; }
+    main { padding: 18px 16px; }
+    .options li { font-size: 0.9em; }
+    .result-detail { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .btn { padding: 10px 16px; font-size: 0.85em; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>📖 PETUALANGAN LITERASI 📖</h1>
+    <p>Tantangan Memahami Novel — Kelas XII SMA</p>
+  </header>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="info-bar">
+    <div>Soal <span id="currentNum">1</span> / 15</div>
+    <div>Skor: <span id="scoreLive">0</span></div>
+  </div>
+
+  <main id="quizMain">
+    <!-- ================= SOAL 1 : PG ================= -->
+    <div class="question-card active" data-type="pg" data-points="1">
+      <span class="badge badge-pg">Pilihan Ganda</span>
+      <p class="question-text">1. Manakah pernyataan yang paling tepat menggambarkan pengertian novel?</p>
+      <ul class="options" data-correct="C">
+        <li data-opt="A"><span class="marker">A</span><span>Karya sastra yang ditulis dalam bentuk baris dan bait, serta sangat padat makna.</span></li>
+        <li data-opt="B"><span class="marker">B</span><span>Cerita pendek yang hanya berfokus pada satu peristiwa dan dapat dibaca sekali duduk.</span></li>
+        <li data-opt="C"><span class="marker">C</span><span>Karya prosa fiksi yang menceritakan kehidupan tokoh secara kompleks dan biasanya terdiri atas banyak bab.</span></li>
+        <li data-opt="D"><span class="marker">D</span><span>Karya sastra lama yang berisi nasihat dan disampaikan secara lisan dari generasi ke generasi.</span></li>
+      </ul>
+      <div class="feedback" data-explain="Novel adalah karya prosa fiksi yang menceritakan kehidupan tokoh secara kompleks, memiliki alur yang lebih panjang dan mendalam dibandingkan cerpen, serta umumnya terdiri atas banyak bab."></div>
+    </div>
+
+    <!-- ================= SOAL 2 : PG ================= -->
+    <div class="question-card" data-type="pg" data-points="1">
+      <span class="badge badge-pg">Pilihan Ganda</span>
+      <p class="question-text">2. Berikut ini yang termasuk unsur <em>ekstrinsik</em> novel adalah ….</p>
+      <ul class="options" data-correct="B">
+        <li data-opt="A"><span class="marker">A</span><span>Tema, alur, dan latar cerita</span></li>
+        <li data-opt="B"><span class="marker">B</span><span>Nilai budaya, latar belakang penulis, dan kondisi sosial masyarakat</span></li>
+        <li data-opt="C"><span class="marker">C</span><span>Tokoh, penokohan, dan sudut pandang</span></li>
+        <li data-opt="D"><span class="marker">D</span><span>Gaya bahasa, amanat, dan konflik</span></li>
+      </ul>
+      <div class="feedback" data-explain="Unsur ekstrinsik adalah unsur di luar karya sastra yang ikut membangun cerita, seperti nilai budaya, latar belakang penulis, kondisi sosial masyarakat, dan nilai moral. Unsur intrinsik meliputi tema, alur, tokoh, latar, sudut pandang, gaya bahasa, dan amanat."></div>
+    </div>
+
+    <!-- ================= SOAL 3 : PG ================= -->
+    <div class="question-card" data-type="pg" data-points="1">
+      <span class="badge badge-pg">Pilihan Ganda</span>
+      <p class="question-text">3. Tokoh yang mengalami perubahan nasib dan menjadi pusat cerita disebut tokoh ….</p>
+      <ul class="options" data-correct="A">
+        <li data-opt="A"><span class="marker">A</span><span>Protagonis</span></li>
+        <li data-opt="B"><span class="marker">B</span><span>Antagonis</span></li>
+        <li data-opt="C"><span class="marker">C</span><span>Tritagonis</span></li>
+        <li data-opt="D"><span class="marker">D</span><span>Figuran</span></li>
+      </ul>
+      <div class="feedback" data-explain="Protagonis adalah tokoh utama yang menjadi pusat cerita dan biasanya mengalami perubahan nasib atau konflik utama. Antagonis adalah tokoh yang menjadi lawan protagonis, tritagonis adalah tokoh pendukung, dan figuran adalah tokoh tambahan yang tidak berpengaruh besar."></div>
+    </div>
+
+    <!-- ================= SOAL 4 : PG ================= -->
+    <div class="question-card" data-type="pg" data-points="1">
+      <span class="badge badge-pg">Pilihan Ganda</span>
+      <p class="question-text">4. Perhatikan penggalan alur berikut!</p>
+      <div class="quote-box">
+        Konflik mulai memuncak ketika Siti mengetahui bahwa sahabatnya menyembunyikan rahasia besar. Ia dihadapkan pada pilihan sulit: memaafkan atau memutuskan hubungan. Ketegangan ini mencapai titik puncak saat keduanya bertemu di sebuah pesta.
+      </div>
+      <p class="question-text">Bagian tersebut dalam struktur alur cerita disebut ….</p>
+      <ul class="options" data-correct="C">
+        <li data-opt="A"><span class="marker">A</span><span>Orientasi</span></li>
+        <li data-opt="B"><span class="marker">B</span><span>Komplikasi</span></li>
+        <li data-opt="C"><span class="marker">C</span><span>Klimaks</span></li>
+        <li data-opt="D"><span class="marker">D</span><span>Resolusi</span></li>
+      </ul>
+      <div class="feedback" data-explain="Klimaks adalah bagian puncak ketegangan dalam cerita, saat konflik mencapai titik paling memuncak dan tokoh menghadapi keputusan atau pertemuan krusial, seperti yang digambarkan pada kutipan di atas."></div>
+    </div>
+
+    <!-- ================= SOAL 5 : PG ================= -->
+    <div class="question-card" data-type="pg" data-points="1">
+      <span class="badge badge-pg">Pilihan Ganda</span>
+      <p class="question-text">5. Kalimat berikut yang menggunakan sudut pandang <em>orang ketiga serba tahu</em> adalah ….</p>
+      <ul class="options" data-correct="D">
+        <li data-opt="A"><span class="marker">A</span><span>Aku berlari menuju stasiun tanpa memedulikan teriakan ibuku.</span></li>
+        <li data-opt="B"><span class="marker">B</span><span>Kami duduk melingkar, berbagi cerita tentang masa depan.</span></li>
+        <li data-opt="C"><span class="marker">C</span><span>Ia menatapku lekat, seolah ingin menyampaikan sesuatu.</span></li>
+        <li data-opt="D"><span class="marker">D</span><span>Rina tersenyum getir. Ia tahu bahwa keputusan itu akan mengubah hidupnya, sementara di sudut lain, Adi pun menyimpan rahasia yang sama.</span></li>
+      </ul>
+      <div class="feedback" data-explain="Sudut pandang orang ketiga serba tahu (mahatahu) menggunakan kata 'ia' dan narator mengetahui pikiran serta perasaan semua tokoh, seperti pada pilihan D yang menceritakan isi hati Rina sekaligus Adi."></div>
+    </div>
+
+    <!-- ================= SOAL 6 : PG ================= -->
+    <div class="question-card" data-type="pg" data-points="1">
+      <span class="badge badge-pg">Pilihan Ganda</span>
+      <p class="question-text">6. Majas yang digunakan dalam kalimat <em>"Angin berbisik lembut menyampaikan kerinduan daun-daun pada tanah"</em> adalah ….</p>
+      <ul class="options" data-correct="B">
+        <li data-opt="A"><span class="marker">A</span><span>Hiperbola</span></li>
+        <li data-opt="B"><span class="marker">B</span><span>Personifikasi</span></li>
+        <li data-opt="C"><span class="marker">C</span><span>Metafora</span></li>
+        <li data-opt="D"><span class="marker">D</span><span>Simile</span></li>
+      </ul>
+      <div class="feedback" data-explain="Personifikasi adalah majas yang memberikan sifat atau perilaku manusia kepada benda mati. 'Angin berbisik' dan 'menyampaikan kerinduan' adalah perilaku manusia yang diberikan kepada angin dan daun."></div>
+    </div>
+
+    <!-- ================= SOAL 7 : PG ================= -->
+    <div class="question-card" data-type="pg" data-points="1">
+      <span class="badge badge-pg">Pilihan Ganda</span>
+      <p class="question-text">7. Amanat yang paling tepat dari penggalan cerita berikut adalah ….</p>
+      <div class="quote-box">
+        Meski telah gagal berkali-kali, Pak Tono tidak pernah berhenti mencoba. Ia percaya bahwa kegagalan hanyalah langkah menuju keberhasilan. Akhirnya, usahanya membuahkan hasil setelah bertahun-tahun berjuang.
+      </div>
+      <ul class="options" data-correct="A">
+        <li data-opt="A"><span class="marker">A</span><span>Jangan mudah menyerah dalam menghadapi kegagalan karena ketekunan akan membuahkan hasil.</span></li>
+        <li data-opt="B"><span class="marker">B</span><span>Kegagalan adalah akhir dari segalanya sehingga kita harus berhati-hati.</span></li>
+        <li data-opt="C"><span class="marker">C</span><span>Keberhasilan hanya milik orang yang beruntung dan kaya.</span></li>
+        <li data-opt="D"><span class="marker">D</span><span>Bekerja keras tidak menjamin kesuksesan, jadi lebih baik pasrah.</span></li>
+      </ul>
+      <div class="feedback" data-explain="Amanat adalah pesan moral yang ingin disampaikan penulis. Kutipan tersebut menekankan ketekunan Pak Tono yang tidak menyerah meski gagal berkali-kali, sehingga amanat yang tepat adalah jangan mudah menyerah karena ketekunan akan membuahkan hasil."></div>
+    </div>
+
+    <!-- ================= SOAL 8 : PG ================= -->
+    <div class="question-card" data-type="pg" data-points="1">
+      <span class="badge badge-pg">Pilihan Ganda</span>
+      <p class="question-text">8. Perhatikan pernyataan berikut!</p>
+      <div class="quote-box">
+        "Novel ini menggunakan latar pedesaan pada era 1960-an, dengan dialog yang banyak memuat kosakata daerah dan suasana kehidupan agraris yang kental."
+      </div>
+      <p class="question-text">Pernyataan tersebut merupakan bagian dari analisis unsur ….</p>
+      <ul class="options" data-correct="C">
+        <li data-opt="A"><span class="marker">A</span><span>Tema dan amanat</span></li>
+        <li data-opt="B"><span class="marker">B</span><span>Penokohan dan karakterisasi</span></li>
+        <li data-opt="C"><span class="marker">C</span><span>Latar dan gaya bahasa</span></li>
+        <li data-opt="D"><span class="marker">D</span><span>Alur dan konflik</span></li>
+      </ul>
+      <div class="feedback" data-explain="Pernyataan tersebut menyebutkan latar tempat (pedesaan), latar waktu (era 1960-an), latar sosial (kehidupan agraris), serta gaya bahasa (kosakata daerah), sehingga termasuk analisis unsur latar dan gaya bahasa."></div>
+    </div>
+
+    <!-- ================= SOAL 9 : KOMPLEKS ================= -->
+    <div class="question-card" data-type="complex" data-points="2">
+      <span class="badge badge-kompleks">Pilihan Ganda Kompleks</span>
+      <p class="question-text">9. Pilihlah <strong>semua</strong> pernyataan yang benar mengenai unsur intrinsik novel! (Jawaban lebih dari satu)</p>
+      <p class="instruction">Klik semua jawaban yang menurut Anda benar, lalu tekan "Periksa Jawaban".</p>
+      <ul class="options multi" data-correct="A,B,D">
+        <li data-opt="A"><span class="marker">A</span><span>Tema adalah gagasan utama yang mendasari seluruh cerita.</span></li>
+        <li data-opt="B"><span class="marker">B</span><span>Penokohan adalah cara pengarang menggambarkan watak dan karakter tokoh.</span></li>
+        <li data-opt="C"><span class="marker">C</span><span>Latar belakang penulis termasuk unsur intrinsik novel.</span></li>
+        <li data-opt="D"><span class="marker">D</span><span>Sudut pandang adalah posisi pengarang dalam menyampaikan cerita.</span></li>
+      </ul>
+      <div class="feedback" data-explain="Unsur intrinsik meliputi tema, penokohan, alur, latar, sudut pandang, gaya bahasa, dan amanat. Latar belakang penulis termasuk unsur EKSTRINSIK, bukan intrinsik."></div>
+    </div>
+
+    <!-- ================= SOAL 10 : KOMPLEKS ================= -->
+    <div class="question-card" data-type="complex" data-points="2">
+      <span class="badge badge-kompleks">Pilihan Ganda Kompleks</span>
+      <p class="question-text">10. Manakah yang termasuk ciri-ciri novel yang membedakannya dengan cerpen? (Jawaban lebih dari satu)</p>
+      <ul class="options multi" data-correct="A,C,D">
+        <li data-opt="A"><span class="marker">A</span><span>Jumlah halaman lebih banyak dan biasanya terdiri atas beberapa bab.</span></li>
+        <li data-opt="B"><span class="marker">B</span><span>Alur cerita sederhana dan hanya berfokus pada satu peristiwa.</span></li>
+        <li data-opt="C"><span class="marker">C</span><span>Tokoh dan konflik yang dihadirkan lebih kompleks dan berkembang.</span></li>
+        <li data-opt="D"><span class="marker">D</span><span>Memungkinkan adanya beberapa subplot atau cerita sampingan.</span></li>
+      </ul>
+      <div class="feedback" data-explain="Novel memiliki jumlah halaman lebih banyak, tokoh dan konflik lebih kompleks, serta memungkinkan adanya subplot. Pilihan B justru merupakan ciri cerpen, bukan novel."></div>
+    </div>
+
+    <!-- ================= SOAL 11 : KOMPLEKS ================= -->
+    <div class="question-card" data-type="complex" data-points="2">
+      <span class="badge badge-kompleks">Pilihan Ganda Kompleks</span>
+      <p class="question-text">11. Berdasarkan penggalan cerita berikut, pilihlah pernyataan yang <strong>sesuai</strong> dengan isi kutipan! (Jawaban lebih dari satu)</p>
+      <div class="quote-box">
+        Sari menatap cermin. Wajahnya pucat, matanya sembab. Ia baru saja membaca surat dari ayahnya yang telah lama pergi. Surat itu berisi permintaan maaf dan janji untuk kembali. Sari tak tahu harus bahagia atau marah. Di satu sisi ia merindukan ayahnya, tetapi di sisi lain ia masih menyimpan luka lama.
+      </div>
+      <ul class="options multi" data-correct="A,B,D">
+        <li data-opt="A"><span class="marker">A</span><span>Sari mengalami konflik batin antara rindu dan rasa kecewa terhadap ayahnya.</span></li>
+        <li data-opt="B"><span class="marker">B</span><span>Kutipan tersebut menggunakan sudut pandang orang ketiga.</span></li>
+        <li data-opt="C"><span class="marker">C</span><span>Sari sama sekali tidak merindukan ayahnya dan ingin melupakannya.</span></li>
+        <li data-opt="D"><span class="marker">D</span><span>Surat dari ayah memicu munculnya konflik emosional dalam diri Sari.</span></li>
+      </ul>
+      <div class="feedback" data-explain="Kutipan menunjukkan konflik batin Sari yang merindukan ayahnya tetapi masih menyimpan luka lama. Kutipan menggunakan sudut pandang orang ketiga (menggunakan nama 'Sari' dan narator mengetahui isi hatinya). Pilihan C salah karena Sari justru merindukan ayahnya."></div>
+    </div>
+
+    <!-- ================= SOAL 12 : KOMPLEKS ================= -->
+    <div class="question-card" data-type="complex" data-points="2">
+      <span class="badge badge-kompleks">Pilihan Ganda Kompleks</span>
+      <p class="question-text">12. Pilihlah <strong>semua</strong> pernyataan yang benar tentang jenis-jenis alur dalam novel! (Jawaban lebih dari satu)</p>
+      <ul class="options multi" data-correct="A,B,D">
+        <li data-opt="A"><span class="marker">A</span><span>Alur maju (progresif) menceritakan peristiwa secara berurutan dari awal ke akhir.</span></li>
+        <li data-opt="B"><span class="marker">B</span><span>Alur mundur (regresif) menggunakan sorotan balik atau flashback.</span></li>
+        <li data-opt="C"><span class="marker">C</span><span>Alur campuran tidak pernah digunakan dalam novel karena membingungkan.</span></li>
+        <li data-opt="D"><span class="marker">D</span><span>Alur campuran menggabungkan alur maju dan alur mundur dalam satu cerita.</span></li>
+      </ul>
+      <div class="feedback" data-explain="Alur maju berurutan dari awal ke akhir, alur mundur menggunakan flashback, dan alur campuran menggabungkan keduanya. Alur campuran justru sering digunakan dalam novel dan tidak membingungkan jika disusun dengan baik."></div>
+    </div>
+
+    <!-- ================= SOAL 13 : ANALISIS ================= -->
+    <div class="question-card" data-type="analysis" data-points="3">
+      <span class="badge badge-analisis">Analisis Kutipan Novel</span>
+      <p class="question-text">13. Bacalah kutipan novel berikut dengan saksama!</p>
+      <div class="quote-box">
+        "Langit sore itu berwarna jingga keemasan, seolah melukiskan harapan yang mulai pudar di hati Bu Ratna. Ia duduk termenung di teras rumah, memandangi jalan yang telah seribu kali ia lalui bersama almarhum suaminya. Setiap kerikil di jalan itu seperti menyimpan bisikan kenangan. Bu Ratna menarik napas panjang, lalu bangkit. Ia sadar, hidup harus terus berjalan meski hati masih terluka."
+      </div>
+      <p class="question-text">Analisislah kutipan tersebut dengan menjawab pertanyaan berikut secara tepat!</p>
+      <p class="question-text" style="font-weight:normal;font-size:0.95em;">(a) Apa tema yang tergambar dalam kutipan? (b) Majas apa yang dominan digunakan? (c) Apa amanat yang dapat diambil?</p>
+      <ul class="options" data-correct="B">
+        <li data-opt="A"><span class="marker">A</span><span>Tema: perjuangan ekonomi; Majas: hiperbola; Amanat: rajinlah menabung.</span></li>
+        <li data-opt="B"><span class="marker">B</span><span>Tema: kehilangan dan ketabahan; Majas: personifikasi; Amanat: hidup harus terus berjalan meski hati terluka.</span></li>
+        <li data-opt="C"><span class="marker">C</span><span>Tema: persahabatan; Majas: metafora; Amanat: jangan melupakan sahabat.</span></li>
+        <li data-opt="D"><span class="marker">D</span><span>Tema: cinta remaja; Majas: simile; Amanat: jangan pacaran di usia muda.</span></li>
+      </ul>
+      <div class="feedback" data-explain="Tema kutipan adalah kehilangan dan ketabahan (Bu Ratna mengenang almarhum suaminya). Majas personifikasi terlihat pada 'kerikil seperti menyimpan bisikan kenangan' dan 'harapan yang mulai pudar'. Amanatnya adalah hidup harus terus berjalan meski hati masih terluka, seperti yang disadari Bu Ratna di akhir kutipan."></div>
+    </div>
+
+    <!-- ================= SOAL 14 : ANALISIS ================= -->
+    <div class="question-card" data-type="analysis" data-points="3">
+      <span class="badge badge-analisis">Analisis Kutipan Novel</span>
+      <p class="question-text">14. Cermatilah kutipan berikut!</p>
+      <div class="quote-box">
+        "Sekali lagi Raka menatap wajah pria itu dengan tatapan tajam. 'Kau tidak pernah berubah, Pak. Selalu ingin menang sendiri,' ucapnya lirih namun menusuk. Pak Haris hanya diam, tetapi matanya berkaca-kaca. Di ruang tamu yang hening, keputusan besar sedang dipertaruhkan: Raka akan pergi meninggalkan rumah untuk selamanya atau bertahan demi ibunya yang sakit."
+      </div>
+      <p class="question-text">Pernyataan manakah yang paling tepat menggambarkan konflik dan penokohan dalam kutipan tersebut?</p>
+      <ul class="options" data-correct="C">
+        <li data-opt="A"><span class="marker">A</span><span>Konflik antartokoh tidak terlihat; Raka digambarkan sebagai tokoh yang lemah dan penurut.</span></li>
+        <li data-opt="B"><span class="marker">B</span><span>Konflik batin hanya dialami Pak Haris; Raka digambarkan sebagai tokoh yang acuh tak acuh.</span></li>
+        <li data-opt="C"><span class="marker">C</span><span>Konflik antartokoh tampak dari ketegangan Raka dan Pak Haris; Raka digambarkan sebagai tokoh yang tegas dan berani.</span></li>
+        <li data-opt="D"><span class="marker">D</span><span>Konflik hanya berupa konflik sosial; Raka digambarkan sebagai tokoh yang sabar dan penyayang.</span></li>
+      </ul>
+      <div class="feedback" data-explain="Kutipan menunjukkan konflik antartokoh antara Raka dan Pak Haris yang ditandai dengan dialog tajam Raka. Raka digambarkan sebagai tokoh yang tegas dan berani mengutarakan pendapat, sementara keputusan besar yang harus ia ambil menunjukkan adanya konflik batin juga."></div>
+    </div>
+
+    <!-- ================= SOAL 15 : ANALISIS ================= -->
+    <div class="question-card" data-type="analysis" data-points="3">
+      <span class="badge badge-analisis">Analisis Kutipan Novel</span>
+      <p class="question-text">15. Perhatikan kutipan novel berikut!</p>
+      <div class="quote-box">
+        "Pagi itu, Laras menyadari sesuatu yang selama ini ia abaikan: bahwa kebahagiaan tidak selalu datang dari hal-hal besar. Ia menemukannya dalam secangkir teh hangat yang disiapkan ibunya setiap pagi, dalam tawa lepas adiknya, dan dalam pelukan hangat sang ayah selepas bekerja. Selama ini, Laras terlalu sibuk mengejar impian hingga lupa mensyukuri hal-hal sederhana di sekitarnya."
+      </div>
+      <p class="question-text">Analisis yang paling tepat mengenai kutipan di atas adalah ….</p>
+      <ul class="options" data-correct="B">
+        <li data-opt="A"><span class="marker">A</span><span>Tema: impian harus dikejar tanpa henti. Latar: sekolah. Sudut pandang: orang pertama.</span></li>
+        <li data-opt="B"><span class="marker">B</span><span>Tema: pentingnya bersyukur atas hal sederhana. Latar: rumah. Sudut pandang: orang ketiga serba tahu. Amanat: syukurilah kebahagiaan kecil di sekitar kita.</span></li>
+        <li data-opt="C"><span class="marker">C</span><span>Tema: persaingan antarsaudara. Latar: kantor. Gaya bahasa: hiperbola.</span></li>
+        <li data-opt="D"><span class="marker">D</span><span>Tema: perjuangan meraih mimpi. Tokoh utama: ibu. Konflik: ekonomi.</span></li>
+      </ul>
+      <div class="feedback" data-explain="Kutipan bertema pentingnya bersyukur atas hal-hal sederhana. Latar tempat adalah rumah (secangkir teh dari ibu, adik, ayah). Sudut pandang orang ketiga serba tahu karena narator mengetahui isi hati dan kesadaran Laras. Amanatnya adalah agar kita mensyukuri kebahagiaan kecil di sekitar."></div>
+    </div>
+
+    <!-- ================= HASIL ================= -->
+    <div id="resultScreen">
+      <div class="result-emoji" id="resultEmoji">🏆</div>
+      <h2 class="result-title" id="resultTitle">Selamat!</h2>
+      <div class="score-circle" id="scoreCircle">
+        <div class="score-value" id="finalScore">0</div>
+        <div class="score-label">dari 100</div>
+      </div>
+      <div class="result-detail">
+        <div class="detail-item green">
+          <div class="num" id="correctCount">0</div>
+          <div class="lbl">Benar</div>
+        </div>
+        <div class="detail-item red">
+          <div class="num" id="wrongCount">0</div>
+          <div class="lbl">Salah</div>
+        </div>
+        <div class="detail-item blue">
+          <div class="num" id="totalPoints">0</div>
+          <div class="lbl">Poin</div>
+        </div>
+      </div>
+      <div class="result-message" id="resultMessage"></div>
+      <button class="btn-restart" onclick="restartQuiz()">🔄 Ulangi Kuis</button>
+    </div>
+
+    <!-- ================= NAVIGASI ================= -->
+    <div class="nav-buttons" id="navButtons">
+      <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()" disabled>◀ Sebelumnya</button>
+      <button class="btn btn-submit" id="checkBtn" onclick="checkAnswer()" style="display:none;">Periksa Jawaban</button>
+      <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Selanjutnya ▶</button>
+    </div>
+  </main>
+</div>
+
+<script>
+  /* ================= DATA SOAL ================= */
+  const questions = document.querySelectorAll('.question-card');
+  const totalQuestions = questions.length;
+  const answerState = new Array(totalQuestions).fill(null); // null = belum dijawab, true/false
+  let currentIndex = 0;
+  let score = 0;            // total poin benar
+  let correctCount = 0;
+  let wrongCount = 0;
+  const maxPoints = 15;     // total poin maksimal (8*1 + 4*2 + 3*3 = 8+8+9 = 25)
+
+  /* ================= RENDER SOAL ================= */
+  function renderQuestion() {
+    questions.forEach((q, i) => q.classList.toggle('active', i === currentIndex));
+
+    document.getElementById('currentNum').textContent = currentIndex + 1;
+    document.getElementById('progressFill').style.width =
+      ((currentIndex + 1) / totalQuestions * 100) + '%';
+
+    const q = questions[currentIndex];
+    const type = q.dataset.type;
+    const opts = q.querySelector('.options');
+    const feedback = q.querySelector('.feedback');
+    const checkBtn = document.getElementById('checkBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+
+    // Reset visual feedback
+    feedback.classList.remove('show', 'correct', 'wrong');
+    opts.querySelectorAll('li').forEach(li => {
+      li.classList.remove('selected', 'correct', 'wrong');
+    });
+
+    // Status terjawab?
+    const answered = answerState[currentIndex] !== null;
+
+    if (type === 'complex') {
+      checkBtn.style.display = 'inline-block';
+      checkBtn.disabled = answered;
+      nextBtn.style.display = 'inline-block';
+    } else {
+      checkBtn.style.display = 'none';
+      nextBtn.style.display = 'inline-block';
+      nextBtn.disabled = !answered;
+    }
+
+    // Jika sudah dijawab, tampilkan feedback & kunci jawaban
+    if (answered) {
+      showFeedback(q, answerState[currentIndex]);
+    } else {
+      // Untuk complex, aktifkan pilihan
+      if (type === 'complex') {
+        opts.querySelectorAll('li').forEach(li => {
+          li.style.pointerEvents = 'auto';
+        });
+      }
+      // Untuk PG/analisis, klik langsung dinilai
+      if (type !== 'complex') {
+        opts.querySelectorAll('li').forEach(li => {
+          li.style.pointerEvents = 'auto';
+        });
+      }
+    }
+
+    prevBtn.disabled = currentIndex === 0;
+    nextBtn.disabled = !answered;
+  }
+
+  /* ================= PILIH OPSI ================= */
+  document.querySelectorAll('.options').forEach(opts => {
+    opts.addEventListener('click', function(e) {
+      const li = e.target.closest('li');
+      if (!li || li.style.pointerEvents === 'none') return;
+
+      const card = this.closest('.question-card');
+      const idx = Array.from(questions).indexOf(card);
+      if (answerState[idx] !== null && card.dataset.type !== 'complex') return;
+      if (answerState[idx] !== null && card.dataset.type === 'complex') return;
+
+      const type = card.dataset.type;
+
+      if (type === 'complex') {
+        li.classList.toggle('selected');
+      } else {
+        // PG / analisis: pilih satu, langsung nilai
+        this.querySelectorAll('li').forEach(o => o.classList.remove('selected'));
+        li.classList.add('selected');
+        // Langsung periksa
+        checkAnswer();
+      }
+    });
+  });
+
+  /* ================= PERIKSA JAWABAN ================= */
+  function checkAnswer() {
+    const card = questions[currentIndex];
+    const type = card.dataset.type;
+    const opts = card.querySelector('.options');
+    const feedback = card.querySelector('.feedback');
+    const correctAttr = opts.dataset.correct.split(',');
+
+    let isCorrect = false;
+
+    if (type === 'complex') {
+      const selected = Array.from(opts.querySelectorAll('li.selected'))
+        .map(li => li.dataset.opt)
+        .sort();
+      const correctArr = correctAttr.sort();
+      isCorrect = selected.length === correctArr.length &&
+                  selected.every((v, i) => v === correctArr[i]);
+
+      // Tandai benar/salah
+      opts.querySelectorAll('li').forEach(li => {
+        li.style.pointerEvents = 'none';
+        const opt = li.dataset.opt;
+        if (correctAttr.includes(opt)) {
+          li.classList.add('correct');
+        } else if (li.classList.contains('selected')) {
+          li.classList.add('wrong');
+        }
+        li.classList.remove('selected');
+      });
+    } else {
+      const selected = opts.querySelector('li.selected');
+      if (!selected) return;
+      const opt = selected.dataset.opt;
+      isCorrect = correctAttr.includes(opt);
+
+      opts.querySelectorAll('li').forEach(li => {
+        li.style.pointerEvents = 'none';
+        if (li.dataset.opt === opt) {
+          li.classList.add(isCorrect ? 'correct' : 'wrong');
+        }
+        if (correctAttr.includes(li.dataset.opt) && !isCorrect) {
+          li.classList.add('correct');
+        }
+      });
+    }
+
+    answerState[currentIndex] = isCorrect;
+
+    if (isCorrect) {
+      correctCount++;
+      score += parseInt(card.dataset.points);
+    } else {
+      wrongCount++;
+    }
+
+    // Tampilkan feedback
+    const points = card.dataset.points;
+    const explain = feedback.dataset.explain || '';
+    feedback.innerHTML = `<strong>${isCorrect ? '✅ Jawaban Benar!' : '❌ Jawaban Kurang Tepat'}</strong>${explain}`;
+    feedback.classList.add('show', isCorrect ? 'correct' : 'wrong');
+
+    // Update UI
+    document.getElementById('scoreLive').textContent = score;
+    document.getElementById('nextBtn').disabled = false;
+    if (type === 'complex') {
+      document.getElementById('checkBtn').disabled = true;
+    }
+    document.getElementById('prevBtn').disabled = currentIndex === 0;
+  }
+
+  /* ================= TAMPILKAN FEEDBACK ================= */
+  function showFeedback(card, isCorrect) {
+    const opts = card.querySelector('.options');
+    const feedback = card.querySelector('.feedback');
+    const correctAttr = opts.dataset.correct.split(',');
+    const type = card.dataset.type;
+
+    opts.querySelectorAll('li').forEach(li => {
+      li.style.pointerEvents = 'none';
+      const opt = li.dataset.opt;
+      if (type === 'complex') {
+        if (correctAttr.includes(opt)) li.classList.add('correct');
+        if (li.dataset.selected === 'true' && !correctAttr.includes(opt)) {
+          li.classList.add('wrong');
+        }
+      } else {
+        if (correctAttr.includes(opt)) li.classList.add('correct');
+      }
+    });
+
+    const explain = feedback.dataset.explain || '';
+    feedback.innerHTML = `<strong>${isCorrect ? '✅ Jawaban Benar!' : '❌ Jawaban Kurang Tepat'}</strong>${explain}`;
+    feedback.classList.add('show', isCorrect ? 'correct' : 'wrong');
+  }
+
+  /* ================= NAVIGASI ================= */
+  function nextQuestion() {
+    if (currentIndex < totalQuestions - 1) {
+      currentIndex++;
+      renderQuestion();
+    } else {
+      showResult();
+    }
+  }
+
+  function prevQuestion() {
+    if (currentIndex > 0) {
+      currentIndex--;
+      renderQuestion();
+    }
+  }
+
+  /* ================= HASIL AKHIR ================= */
+  function showResult() {
+    document.getElementById('quizMain').querySelectorAll('.question-card')
+      .forEach(q => q.classList.remove('active'));
+    document.getElementById('navButtons').style.display = 'none';
+    document.getElementById('resultScreen').classList.add('show');
+
+    // Hitung skor 0-100
+    const finalScore = Math.round((score / 25) * 100);
+    document.getElementById('finalScore').textContent = finalScore;
+    document.getElementById('correctCount').textContent = correctCount;
+    document.getElementById('wrongCount').textContent = wrongCount;
+    document.getElementById('totalPoints').textContent = score;
+
+    // Circle progress
+    const circle = document.getElementById('scoreCircle');
+    const deg = (finalScore / 100) * 360;
+    let color = finalScore >= 80 ? '#28a745' : finalScore >= 60 ? '#ffc107' : '#dc3545';
+    circle.style.background = `conic-gradient(${color} ${deg}deg, #e0e0e0 0deg)`;
+
+    // Emoji & title
+    let emoji, title, message;
+    if (finalScore >= 90) {
+      emoji = '🏆'; title = 'Luar Biasa!';
+      message = 'Kamu sangat menguasai materi novel! Pemahamanmu tentang unsur intrinsik, ekstrinsik, dan analisis kutipan sudah sangat baik. Pertahankan!';
+    } else if (finalScore >= 75) {
+      emoji = '🌟'; title = 'Hebat!';
+      message = 'Kamu sudah memahami sebagian besar materi novel. Tingkatkan lagi kemampuan analisis kutipan dan pemahaman konflik ya!';
+    } else if (finalScore >= 60) {
+      emoji = '👍'; title = 'Cukup Baik';
+      message = 'Pemahamanmu tentang novel sudah cukup, tetapi masih perlu diperkuat pada materi unsur intrinsik dan analisis kutipan. Baca kembali materi dan berlatihlah!';
+    } else {
+      emoji = '📚'; title = 'Perlu Belajar Lagi';
+      message = 'Jangan menyerah! Pelajari kembali materi tentang pengertian novel, unsur intrinsik, ekstrinsik, alur, latar, dan sudut pandang. Ulangi kuis ini setelah belajar!';
+    }
+
+    document.getElementById('resultEmoji').textContent = emoji;
+    document.getElementById('resultTitle').textContent = title;
+    document.getElementById('resultMessage').textContent = message;
+
+    // Tandai semua soal sudah dijawab
+    answerState.forEach((v, i) => {
+      if (v === null) answerState[i] = false;
+    });
+  }
+
+  /* ================= RESTART ================= */
+  function restartQuiz() {
+    currentIndex = 0;
+    score = 0;
+    correctCount = 0;
+    wrongCount = 0;
+    answerState.fill(null);
+
+    document.getElementById('scoreLive').textContent = '0';
+    document.getElementById('resultScreen').classList.remove('show');
+    document.getElementById('navButtons').style.display = 'flex';
+    document.getElementById('checkBtn').style.display = 'none';
+
+    // Reset semua card & opsi
+    questions.forEach(q => {
+      q.classList.remove('active');
+      const opts = q.querySelector('.options');
+      opts.querySelectorAll('li').forEach(li => {
+        li.classList.remove('selected', 'correct', 'wrong');
+        li.style.pointerEvents = 'auto';
+      });
+      const fb = q.querySelector('.feedback');
+      fb.classList.remove('show', 'correct', 'wrong');
+      fb.innerHTML = '';
+    });
+
+    document.getElementById('currentNum').textContent = '1';
+    document.getElementById('progressFill').style.width = '6.66%';
+    questions[0].classList.add('active');
+    document.getElementById('prevBtn').disabled = true;
+    document.getElementById('nextBtn').disabled = true;
+    document.getElementById('nextBtn').textContent = 'Selanjutnya ▶';
+    renderQuestion();
+  }
+
+  /* ================= INIT ================= */
+  // Karena halaman baru dimuat, soal pertama belum dijawab
+  // Pastikan nextBtn disabled sampai dijawab
+  document.getElementById('nextBtn').disabled = true;
+  renderQuestion();
+</script>
+</body>
+</html>
+```
+
+---
+
+**Fitur utama kuis ini:**
+
+- **15 soal** terdiri atas: 8 pilihan ganda (poin 1), 4 pilihan ganda kompleks (poin 2), dan 3 analisis kutipan (poin 3). Total poin maksimal 25.
+- **Penilaian otomatis** dengan skor langsung (live score), feedback per soal, dan skor akhir 0–100.
+- **Pilihan ganda kompleks** memerlukan klik beberapa opsi, lalu tombol "Periksa Jawaban" untuk menilai.
+- **Analisis kutipan novel** menggunakan kutipan fiktif yang menuntut pemahaman tema, majas, amanat, konflik, latar, dan sudut pandang (HOTS).
+- **Desain responsif** dengan animasi, progress bar, dan result screen yang menarik.
+- **Tombol restart** untuk mengulangi kuis dari awal.
+
+Simpan kode di atas sebagai file `.html` (misalnya `kuis_novel.html`), lalu buka di browser untuk menjalankannya.
